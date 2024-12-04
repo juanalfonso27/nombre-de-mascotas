@@ -5,10 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Clientes y Sugerencias</title>
   <link rel="stylesheet" href="styles.css">
-  <!-- Firebase App (the core Firebase SDK) -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <!-- Firebase Firestore -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
 <body>
   <h1>Registro de Clientes</h1>
@@ -30,11 +26,12 @@
 
     <button type="submit">Registrar</button>
   </form>
-  <script> 
-    // Configuración de Firebase
+
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
+    // Configuración de Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCs0LgyS7IfZopFPooIf1Ur7DKwkHLvWDk",
       authDomain: "datos-de-name-mascotas.firebaseapp.com",
@@ -44,12 +41,11 @@
       appId: "1:88299031337:web:6ad6b073f40a44cb470538"
     };
 
-    // Inicializa Firebase y Firestore
+    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Función para guardar datos en Firestore
-    async function saveFormData(event) {
+    document.getElementById("registerForm").addEventListener("submit", async (event) => {
       event.preventDefault();
 
       const name = document.getElementById("name").value;
@@ -67,17 +63,12 @@
           suggestion,
         });
         alert("¡Registro exitoso!");
-        window.location.href = "/results.html"; // Redirige a la página de resultados
+        window.location.href = "/results.html";
       } catch (error) {
         console.error("Error al guardar los datos:", error);
         alert("Hubo un problema al registrar los datos.");
       }
-    }
-
-    // Detecta si está en la página de formulario
-    if (document.getElementById("registerForm")) {
-      document.getElementById("registerForm").addEventListener("submit", saveFormData);
-    }
+    });
   </script>
 </body>
 </html>
