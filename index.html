@@ -29,7 +29,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     // Configuración de Firebase
     const firebaseConfig = {
@@ -55,15 +55,24 @@
       const suggestion = document.getElementById("suggestion").value;
 
       try {
-        await addDoc(collection(db, "clients"), {
-          name,
-          location,
-          phone,
-          email,
-          suggestion,
-        });
-        alert("¡Registro exitoso!");
-        window.location.href = "/results.html";
+        // Verificar si ya existe un cliente con el mismo teléfono o correo
+        const q = query(collection(db, "clients"), where("phone", "==", phone), where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          // Si no existe, agregar el nuevo cliente
+          await addDoc(collection(db, "clients"), {
+            name,
+            location,
+            phone,
+            email,
+            suggestion,
+          });
+          alert("¡Registro exitoso!");
+          window.location.href = "/results.html";
+        } else {
+          alert("El número de teléfono o correo electrónico ya está registrado.");
+        }
       } catch (error) {
         console.error("Error al guardar los datos:", error);
         alert("Hubo un problema al registrar los datos.");
