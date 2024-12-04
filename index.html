@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registro de Clientes y Sugerencias</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
 <body>
   <h1>Registro de Clientes</h1>
@@ -27,114 +29,105 @@
     <button type="submit">Registrar</button>
   </form>
   <script> 
-    // Importa Firebase y Firestore
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCs0LgyS7IfZopFPooIf1Ur7DKwkHLvWDk",
+      authDomain: "datos-de-name-mascotas.firebaseapp.com",
+      projectId: "datos-de-name-mascotas",
+      storageBucket: "datos-de-name-mascotas.firebasestorage.app",
+      messagingSenderId: "88299031337",
+      appId: "1:88299031337:web:6ad6b073f40a44cb470538"
+    };
 
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCs0LgyS7IfZopFPooIf1Ur7DKwkHLvWDk",
-  authDomain: "datos-de-name-mascotas.firebaseapp.com",
-  projectId: "datos-de-name-mascotas",
-  storageBucket: "datos-de-name-mascotas.firebasestorage.app",
-  messagingSenderId: "88299031337",
-  appId: "1:88299031337:web:6ad6b073f40a44cb470538"
-};
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-// Initialize Firebase
+    // Función para guardar datos en Firestore
+    async function saveFormData(event) {
+      event.preventDefault();
 
-// Inicializa Firebase y Firestore
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+      const name = document.getElementById("name").value;
+      const location = document.getElementById("location").value;
+      const phone = document.getElementById("phone").value;
+      const email = document.getElementById("email").value;
+      const suggestion = document.getElementById("suggestion").value;
 
-// Función para guardar datos en Firestore
-async function saveFormData(event) {
-  event.preventDefault();
-
-  const name = document.getElementById("name").value;
-  const location = document.getElementById("location").value;
-  const phone = document.getElementById("phone").value;
-  const email = document.getElementById("email").value;
-  const suggestion = document.getElementById("suggestion").value;
-
-  try {
-    await addDoc(collection(db, "clients"), {
-      name,
-      location,
-      phone,
-      email,
-      suggestion,
-    });
-    alert("¡Registro exitoso!");
-    window.location.href = "/results.html"; // Redirige a la página de resultados
-  } catch (error) {
-    console.error("Error al guardar los datos:", error);
-    alert("Hubo un problema al registrar los datos.");
-  }
-}
-
-// Función para obtener los datos desde Firestore
-async function fetchNameData() {
-  const querySnapshot = await getDocs(collection(db, "clients"));
-  const nameCounts = {};
-
-  querySnapshot.forEach((doc) => {
-    const data = doc.data();
-    const name = data.suggestion;
-
-    if (nameCounts[name]) {
-      nameCounts[name]++;
-    } else {
-      nameCounts[name] = 1;
+      try {
+        await db.collection("clients").add({
+          name,
+          location,
+          phone,
+          email,
+          suggestion,
+        });
+        alert("¡Registro exitoso!");
+        window.location.href = "/results.html"; // Redirige a la página de resultados
+      } catch (error) {
+        console.error("Error al guardar los datos:", error);
+        alert("Hubo un problema al registrar los datos.");
+      }
     }
-  });
 
-  return Object.entries(nameCounts).map(([name, count]) => ({ name, count }));
-}
-
-// Función para mostrar los nombres y sus conteos en la tabla
-async function renderTable() {
-  const nameData = await fetchNameData();
-  const tableBody = document.getElementById("nameTable");
-  tableBody.innerHTML = "";
-
-  let mostChosen = { name: "", count: 0 };
-
-  nameData.forEach(({ name, count }) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `<td>${name}</td><td>${count}</td>`;
-    tableBody.appendChild(row);
-
-    if (count > mostChosen.count) {
-      mostChosen = { name, count };
+    // Detecta si está en la página de formulario
+    if (document.getElementById("registerForm")) {
+      // Asigna el evento para guardar datos en el formulario
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", saveFormData);
     }
-  });
 
-  if (mostChosen.name) {
-    const message = document.createElement("p");
-    message.innerText = `El nombre más popular es: ${mostChosen.name} (${mostChosen.count} veces)`;
-    message.style.textAlign = "center";
-    message.style.fontWeight = "bold";
-    message.style.marginTop = "20px";
-    document.body.appendChild(message);
-  }
-}
+    // Si estás en la página de resultados, ejecuta la función renderTable
+    if (document.getElementById("nameTable")) {
+      document.addEventListener("DOMContentLoaded", renderTable);
+    }
 
-// Detecta si está en la página de formulario o resultados
-if (document.getElementById("registerForm")) {
-  // Asigna el evento para guardar datos en el formulario
-  document
-    .getElementById("registerForm")
-    .addEventListener("submit", saveFormData);
-}
+    async function fetchNameData() {
+      const querySnapshot = await db.collection("clients").get();
+      const nameCounts = {};
 
-if (document.getElementById("nameTable")) {
-  // Renderiza la tabla de resultados
-  document.addEventListener("DOMContentLoaded", renderTable);
-}
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const name = data.suggestion;
+
+        if (nameCounts[name]) {
+          nameCounts[name]++;
+        } else {
+          nameCounts[name] = 1;
+        }
+      });
+
+      return Object.entries(nameCounts).map(([name, count]) => ({ name, count }));
+    }
+
+    async function renderTable() {
+      const nameData = await fetchNameData();
+      const tableBody = document.getElementById("nameTable");
+      tableBody.innerHTML = "";
+
+      let mostChosen = { name: "", count: 0 };
+
+      nameData.forEach(({ name, count }) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `<td>${name}</td><td>${count}</td>`;
+        tableBody.appendChild(row);
+
+        if (count > mostChosen.count) {
+          mostChosen = { name, count };
+        }
+      });
+
+      if (mostChosen.name) {
+        const message = document.createElement("p");
+        message.innerText = `El nombre más popular es: ${mostChosen.name} (${mostChosen.count} veces)`;
+        message.style.textAlign = "center";
+        message.style.fontWeight = "bold";
+        message.style.marginTop = "20px";
+        document.body.appendChild(message);
+      }
+    }
 
   </script>
 </body>
 </html>
+
