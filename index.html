@@ -55,11 +55,13 @@
       const suggestion = document.getElementById("suggestion").value;
 
       try {
-        // Verificar si ya existe un cliente con el mismo teléfono o correo
-        const q = query(collection(db, "clients"), where("phone", "==", phone), where("email", "==", email));
-        const querySnapshot = await getDocs(q);
+        // Verificar si ya existe un cliente con el mismo teléfono
+        const phoneQuery = query(collection(db, "clients"), where("phone", "==", phone));
+        const emailQuery = query(collection(db, "clients"), where("email", "==", email));
 
-        if (querySnapshot.empty) {
+        const [phoneSnapshot, emailSnapshot] = await Promise.all([getDocs(phoneQuery), getDocs(emailQuery)]);
+
+        if (phoneSnapshot.empty && emailSnapshot.empty) {
           // Si no existe, agregar el nuevo cliente
           await addDoc(collection(db, "clients"), {
             name,
@@ -81,3 +83,4 @@
   </script>
 </body>
 </html>
+
