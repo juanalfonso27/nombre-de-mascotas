@@ -59,10 +59,15 @@
         const phoneQuery = query(collection(db, "clients"), where("phone", "==", phone));
         const emailQuery = query(collection(db, "clients"), where("email", "==", email));
 
-        const [phoneSnapshot, emailSnapshot] = await Promise.all([getDocs(phoneQuery), getDocs(emailQuery)]);
+        const phoneSnapshot = await getDocs(phoneQuery);
+        const emailSnapshot = await getDocs(emailQuery);
 
-        if (phoneSnapshot.empty && emailSnapshot.empty) {
-          // Si no existe, agregar el nuevo cliente
+        if (!phoneSnapshot.empty) {
+          alert("El número de teléfono ya está registrado.");
+        } else if (!emailSnapshot.empty) {
+          alert("El correo electrónico ya está registrado.");
+        } else {
+          // Si no existe ni el teléfono ni el correo, agregar el nuevo cliente
           await addDoc(collection(db, "clients"), {
             name,
             location,
@@ -72,8 +77,6 @@
           });
           alert("¡Registro exitoso!");
           window.location.href = "/results.html";
-        } else {
-          alert("El número de teléfono o correo electrónico ya está registrado.");
         }
       } catch (error) {
         console.error("Error al guardar los datos:", error);
@@ -83,4 +86,3 @@
   </script>
 </body>
 </html>
-
