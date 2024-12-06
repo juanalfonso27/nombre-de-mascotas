@@ -95,15 +95,32 @@ button:hover {
     font-size: 0.9em;
   }
 }
+footer {
+  font-size: 12px; /* Tamaño de fuente más pequeño */
+  color: rgba(0, 0, 0, 0.5); /* Color más claro */
+  text-align: center;
+  padding: 5px 10px; /* Menos espacio interno */
+  margin-top: 20px; /* Separarlo del contenido principal */
+}
+
 footer a {
-  color: #030303;
+  color: rgba(0, 0, 0, 0.7); /* Color más tenue */
   text-decoration: none;
-  font-weight: bold;
 }
 
 footer a:hover {
   text-decoration: underline;
+  color: rgba(0, 0, 0, 0.9); /* Resalta al pasar el cursor */
 }
+
+/* Opcional: Posicionar fijo en la parte inferior */
+footer.fixed {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
 
 
 .wrapper{
