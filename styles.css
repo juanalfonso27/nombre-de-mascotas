@@ -84,7 +84,7 @@ button span {
 /* Ajuste para pantallas muy pequeñas (teléfonos) */
 @media (max-width: 480px) {
   body {
-    padding: 10px;
+    padding: 50px;
   }
 
   form {
