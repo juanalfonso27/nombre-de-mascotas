@@ -12,15 +12,10 @@ body {
   padding: 20px;
 }
 
-h1 {
-  color: #333;
-  font-size: 1.8em;
-  text-align: center;
-  margin-bottom: 20px;
-}
+
 
 form {
-  background: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente */
+  background: rgba(255, 255, 255, 0.6); /* Fondo blanco semitransparente */
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -101,4 +96,3 @@ button span {
     font-size: 0.9em;
   }
 }
-
