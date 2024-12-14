@@ -16,7 +16,17 @@ body {
 @media (min-width: 1024px) {
   body {
     background: url('notebook.jpg') no-repeat center center fixed; /* Ajustar la ruta de la imagen para notebooks */
-    background-size: cover;
+    background-size: 100%;
+    background-position: center bottom;
+    background-position: center 0px;
+    width: 100%;
+   
+  }
+  
+}
+@media (min-width: 1024px) {
+  form {
+    margin-top: 110px; /* Baja el formulario en pantallas grandes */
   }
 }
 
@@ -28,6 +38,7 @@ form {
   max-width: 400px;
   width: 100%;
   box-sizing: border-box; /* Asegura que el padding no rompa el diseño */
+  
 }
 
 label {
